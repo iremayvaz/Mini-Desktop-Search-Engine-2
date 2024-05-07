@@ -1,17 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package searchengine;
 
-/**
- *
- * @author iremayvaz
- */
 public class LinkedList<T extends Comparable<T>> {
+
     LinkedListNode<T> head;
 
-    //kelimelerin hangi dosyada kaç tane olduğunu her BSTNode'u için
+    // this class for to keep track of how many words are in which file for each BSTNode
     public void addFirst(T fileName) {
         LinkedListNode<T> newNode = new LinkedListNode<>(fileName);
         if (head == null) {
@@ -22,24 +15,14 @@ public class LinkedList<T extends Comparable<T>> {
         }
     }
 
-    //wordList linkedList'inden wordCounter'ını arttıracağımız node'u buluyoruz.
-    public LinkedListNode<T> findNode(T fileName) {
-        LinkedListNode<T> temp = head;
-        if (temp != null) {
-            while (!temp.fileName.equals(fileName)) {
-                temp = temp.next;
-            }
-        }
-        return temp;
-    }
-
-    //wordList linkedList'in çıktısı
-    public void print() {
+    // output of the linked list (fileName - frequency for that file)
+    public String getLinkedListString() {
+        String text = "";
         LinkedListNode<T> current = head;
         while (current != null) {
-            System.out.print("[" + current.fileName + " , " + current.wordCounter + "] -> ");
+            text += "[" + current.fileName + " , " + current.wordCounter + "] | ";
             current = current.next;
         }
-        System.out.print("null");
+        return text;
     }
 }

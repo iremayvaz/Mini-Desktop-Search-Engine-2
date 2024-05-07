@@ -1,8 +1,7 @@
-
 package searchengine;
 
-
 public class BinarySearchTree<T extends Comparable<T>> {
+
     BSTNode<T> root;
 
     // insertion operation
@@ -24,12 +23,12 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 if (newNode.data.compareTo(temp.data) < 0) {
                     if (temp.left == null) {
                         // if the left side of temp is null add newNode to left of temp
-                        temp.left = newNode; 
+                        temp.left = newNode;
                         temp.left.wordList.addFirst((T) fileName); // add fileName to linkedlist
                         return;
                     }
                     temp = temp.left; // go left side of temp
-                } else if (newNode.data.compareTo(temp.data) > 0) { 
+                } else if (newNode.data.compareTo(temp.data) > 0) {
                     // newNode data greater than temp data we need to go right side of temp
                     if (temp.right == null) {
                         // if the right side of temp is null add newNode to right of temp
@@ -47,6 +46,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
                         // if not add that file to linkedList
                         temp.wordList.addFirst((T) fileName);
                     }
+                    // increase the total frequency of word
                     temp.frequency++;
                     return;
                 }
@@ -55,66 +55,70 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     // inorder traversal (LNR)
-    public void inorder() {
-        System.out.println("inorder: ");
-        inorder(root);
-        System.out.println();
+    public String inorder() {
+        return inorder(root);
     }
-    
-    public void inorder(BSTNode<T> node) {
-        if (node != null) {
-            inorder(node.left);
-            System.out.print(node.data + " : " + node.frequency + " | ");
-            inorder(node.right);
+
+    private String inorder(BSTNode<T> node) {
+        if (node == null) {
+            return "";
         }
+
+        String left = inorder(node.left); // left
+        String currentNode = node.data + ", " + node.frequency + "\n"; // node
+        String right = inorder(node.right); // right
+
+        return left + currentNode + right;
     }
 
     // postorder traversal (LRN)
-    public void postorder() {
-        System.out.println("postorder: ");
-        postorder(root);
-        System.out.println();
+    public String postorder() {
+        return postorder(root);
     }
 
-    public void postorder(BSTNode<T> node) {
-        if (node != null) {
-            postorder(node.left);
-            postorder(node.right);
-            System.out.print(node.data + " : " + node.frequency + " | ");
+    public String postorder(BSTNode<T> node) {
+        if (node == null) {
+            return "";
         }
+
+        String left = postorder(node.left); // left
+        String right = postorder(node.right); // right
+        String currentNode = node.data + ", " + node.frequency + "\n"; // node
+
+        return left + right + currentNode;
     }
 
-    //veri çıktısı preorder (NLR)
-    // preorder traversal
-    public void preorder() {
-        System.out.println("preorder: ");
-        preorder(root);
-        System.out.println();
+    // preorder traversal (NLR)
+    public String preorder() {
+        return preorder(root);
     }
 
-    public void preorder(BSTNode<T> node) {
-        if (node != null) {
-            System.out.print(node.data + " : " + node.frequency +  " | ");
-            preorder(node.left);
-            preorder(node.right);
+    public String preorder(BSTNode<T> node) {
+        if (node == null) {
+            return "";
         }
+
+        String currenNode = node.data + ", " + node.frequency + "\n"; // node
+        String left = preorder(node.left); // left 
+        String right = preorder(node.right); // right
+
+        return currenNode + left + right;
     }
 
-    // search a word from BST and print that word linkedlist (fileName - frequency)
-    public void printWordsCount(T wanted) {
+    // search a word from BST and getLinkedListString that word linkedlist (fileName - frequency)
+    public String printWordsCount(T wanted) {
         BSTNode<T> temp = root;
         while (temp != null) {
             int compare = wanted.compareTo(temp.data);
 
             if (compare == 0) {
-                temp.wordList.print();
-                return;
+                return wanted + ", found " + temp.frequency + " times in : " + temp.wordList.getLinkedListString();
             } else if (compare < 0) {
                 temp = temp.left;
             } else { // compare > 0
                 temp = temp.right;
             }
         }
-        System.out.println("Data not found");
+        return "";
     }
 }

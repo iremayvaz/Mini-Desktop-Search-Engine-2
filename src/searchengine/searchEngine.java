@@ -7,16 +7,19 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class searchEngine extends javax.swing.JFrame {
 
-    public searchEngine() {
-        initComponents();
-        fillIgnoreList();
-    }
-
+    // arrayLists for files and ignoreList
     ArrayList<File> fileList = new ArrayList<>();
     ArrayList<String> ignoreList = new ArrayList<>();
+    // binary search tree
+    BinarySearchTree<String> binarySearchTree;
+
+    public searchEngine() {
+        initComponents();
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -32,6 +35,9 @@ public class searchEngine extends javax.swing.JFrame {
         comboBox_order = new javax.swing.JComboBox<>();
         btn_order = new javax.swing.JButton();
         btn_select = new javax.swing.JButton();
+        btn_ignoreList = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,10 +52,20 @@ public class searchEngine extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txtArea_wordList);
 
         btn_search.setText("Search");
+        btn_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_searchActionPerformed(evt);
+            }
+        });
 
         comboBox_order.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select", "InOrder", "PostOrder", "PreOrder" }));
 
         btn_order.setText("Order");
+        btn_order.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_orderActionPerformed(evt);
+            }
+        });
 
         btn_select.setText("Select File");
         btn_select.addActionListener(new java.awt.event.ActionListener() {
@@ -57,6 +73,21 @@ public class searchEngine extends javax.swing.JFrame {
                 btn_selectActionPerformed(evt);
             }
         });
+
+        btn_ignoreList.setText("Select Ignore File");
+        btn_ignoreList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_ignoreListActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 0, 16)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText(" TRAVERSAL");
+
+        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 16)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("SEARCH RESULT");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -78,20 +109,33 @@ public class searchEngine extends javax.swing.JFrame {
                         .addGap(38, 38, 38)
                         .addComponent(btn_search)
                         .addGap(44, 44, 44)
-                        .addComponent(btn_select)))
+                        .addComponent(btn_select)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_ignoreList, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(91, Short.MAX_VALUE)
+                .addContainerGap(88, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_searched, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_search)
-                    .addComponent(btn_select))
-                .addGap(49, 49, 49)
+                    .addComponent(btn_select)
+                    .addComponent(btn_ignoreList))
+                .addGap(26, 26, 26)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -119,47 +163,88 @@ public class searchEngine extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    // ignoreList kısmı
-    private void fillIgnoreList() {
-        File ignoreListFile = new File("/Users/iremayvaz/Downloads/Project#2/docs/ignoreList.txt");
-        try (BufferedReader reader = new BufferedReader(new FileReader(ignoreListFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                ignoreList.add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        System.out.println("-------------------------------");
-//        System.out.println("Ignore List:");
-//        System.out.println("-------------------------------");
-//        for (String word : ignoreList) {
-//            System.out.println(word);
-//        }
-//        System.out.println("-------------------------------");
-    }
-
     private void btn_selectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_selectActionPerformed
-        // file'ları arrayList'e ekle
+        // add files to arrayList
         chooseFiles();
         readWords();
     }//GEN-LAST:event_btn_selectActionPerformed
 
-    // kelimeleri okuma ve .... ekleme
+    private void btn_ignoreListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ignoreListActionPerformed
+        // ignore list file 
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(true);
+        int choice = fileChooser.showOpenDialog(this);
+        if (choice == JFileChooser.APPROVE_OPTION) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser.getSelectedFile()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    ignoreList.add(line);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_btn_ignoreListActionPerformed
+
+    private void btn_orderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_orderActionPerformed
+        String selectedValue = comboBox_order.getSelectedItem().toString();
+        try {
+            switch (selectedValue) {
+                case "InOrder":
+                    txtArea_bstOrder.setText(binarySearchTree.inorder());
+                    break;
+                case "PreOrder":
+                    txtArea_bstOrder.setText(binarySearchTree.preorder());
+                    break;
+                case "PostOrder":
+                    txtArea_bstOrder.setText(binarySearchTree.postorder());
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(rootPane, "Select an order please!", "Alert", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+            }
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(rootPane, "Please select files! Binary Search Tree is null!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_btn_orderActionPerformed
+
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
+        try {
+            String search = txt_searched.getText();
+            if (search.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Enter a word to search please!", "Alert", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                String text = binarySearchTree.printWordsCount(search);
+                if (!text.isEmpty()) {
+                    txtArea_wordList.setText(binarySearchTree.printWordsCount(search));
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Data not found!", "Sorry", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(rootPane, "Please select files! Binary Search Tree is null!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btn_searchActionPerformed
+
     private void readWords() {
-        // kelimeleri arrayList'e ekle ekle
-        ArrayList<String> words = new ArrayList<>();
+        binarySearchTree = new BinarySearchTree<>();
         for (File file : fileList) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
+                String fileName = file.getName();
                 while ((line = reader.readLine()) != null) {
                     String[] lineWords = line.split("\\s+");
                     Pattern pattern = Pattern.compile("^[^[<>.,\\s]]+");
                     for (String word : lineWords) {
                         Matcher matcher = pattern.matcher(word);
                         if (matcher.matches() && !ignoreList.contains(word)) {
-                            words.add(word);
+                            binarySearchTree.insert(word, fileName);
                         }
                     }
                 }
@@ -167,13 +252,7 @@ public class searchEngine extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
-
-        System.out.println("WORDS");
-        System.out.println("-------------------------------");
-        for (String word : words) {
-            System.out.println(word);
-        }
-        System.out.println("-------------------------------");
+        fileList.clear();
     }
 
     // fileChooser
@@ -181,7 +260,7 @@ public class searchEngine extends javax.swing.JFrame {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
         int choose = fileChooser.showOpenDialog(this);
-        // file'ları arrayliste ekle
+        // add files to arrayList
         if (choose == JFileChooser.APPROVE_OPTION) {
             for (int i = 0; i < fileChooser.getSelectedFiles().length; i++) {
                 fileList.add(fileChooser.getSelectedFiles()[i]);
@@ -209,7 +288,6 @@ public class searchEngine extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new searchEngine().setVisible(true);
@@ -218,10 +296,13 @@ public class searchEngine extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_ignoreList;
     private javax.swing.JButton btn_order;
     private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_select;
     private javax.swing.JComboBox<String> comboBox_order;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

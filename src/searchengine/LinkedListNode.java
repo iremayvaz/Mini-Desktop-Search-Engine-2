@@ -1,11 +1,12 @@
-
 package searchengine;
 
-
 public class LinkedListNode<T extends Comparable<T>> {
+
     LinkedListNode<T> next;
-    T fileName; 
-    int wordCounter; 
+    // file name
+    T fileName;
+    // counter for frequency of word in this file
+    int wordCounter;
 
     public LinkedListNode(T fileName) {
         this.fileName = fileName;
