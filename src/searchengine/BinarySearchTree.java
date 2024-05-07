@@ -112,7 +112,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
             int compare = wanted.compareTo(temp.data);
 
             if (compare == 0) {
-                return wanted + ", found " + temp.frequency + " times in : " + temp.wordList.getLinkedListString();
+                return wanted + ", found " + temp.frequency + " times in :\n" + temp.wordList.getLinkedListString();
             } else if (compare < 0) {
                 temp = temp.left;
             } else { // compare > 0

@@ -20,9 +20,9 @@ public class LinkedList<T extends Comparable<T>> {
         String text = "";
         LinkedListNode<T> current = head;
         while (current != null) {
-            text += "[" + current.fileName + " , " + current.wordCounter + "] | ";
+            text += "[" + current.fileName + " , " + current.wordCounter + "] -> ";
             current = current.next;
         }
-        return text;
+        return text.substring(0, text.length() - 4);
     }
 }
