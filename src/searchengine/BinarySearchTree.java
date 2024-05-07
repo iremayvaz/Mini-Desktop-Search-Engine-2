@@ -1,75 +1,75 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package searchengine;
 
-/**
- *
- * @author iremayvaz
- */
+
 public class BinarySearchTree<T extends Comparable<T>> {
     BSTNode<T> root;
 
-    //veri ekleme
+    // insertion operation
     public void insert(T data, String fileName) {
-        //eklenecek veri
+        // BSTNode for new word to add BST
         BSTNode<T> newNode = new BSTNode<>(data);
-
-        if (root == null) {// root boşsa
+        // check root whether it is null or not
+        if (root == null) {
+            // if it is null add newNode to root and assing root to it
             root = newNode;
-            root.wordList.addFirst((T) fileName);// dosya adı linkedList'e eklendi.
-        } else {// root doluysa
-            BSTNode<T> temp = root;// roottan childlara gezinmek için
-            //root boş değilse
+            // add fileName to linkedList
+            root.wordList.addFirst((T) fileName);
+            // if it is not null
+        } else {
+            // temp node to traversal
+            BSTNode<T> temp = root;
             while (temp != null) {
-                if (newNode.data.compareTo(temp.data) < 0) {// newNode, roottan küçük
-                    if (temp.left == null) {// rootun solu boş
-                        temp.left = newNode;// rootun soluna eklenmeli çünkü roottan küçük
-                        temp.left.wordList.addFirst((T) fileName);
-                        break;// döngüden çıkılmalı
+                // newNode data smaller to temp data we need to go left side of temp
+                if (newNode.data.compareTo(temp.data) < 0) {
+                    if (temp.left == null) {
+                        // if the left side of temp is null add newNode to left of temp
+                        temp.left = newNode; 
+                        temp.left.wordList.addFirst((T) fileName); // add fileName to linkedlist
+                        return;
                     }
-                    temp = temp.left;// tempin solu doluysa solun soluna bakmak üzere tempi tempin solu olarak güncellenir.
-
-                } else if (newNode.data.compareTo(temp.data) > 0) {// newNode, roottan büyük
-
-                    if (temp.right == null) {// rootun sağı boş
+                    temp = temp.left; // go left side of temp
+                } else if (newNode.data.compareTo(temp.data) > 0) { 
+                    // newNode data greater than temp data we need to go right side of temp
+                    if (temp.right == null) {
+                        // if the right side of temp is null add newNode to right of temp
                         temp.right = newNode;
                         temp.right.wordList.addFirst((T) fileName);
-                        break;
+                        return;
                     }
-                    temp = temp.right;
-
-                } else {// newNode.data.compareTo(temp.data) == 0, eleman BST'de var
-
+                    temp = temp.right; // go right side of temp
+                } else {
+                    // we have the data so we do not need to add newNode
                     if (temp.wordList.head.fileName == fileName) {
-                        temp.wordList.head.wordCounter++;// aynı dosyada aynı kelimeden kaç tane olduğunu tutabilmek için
+                        // if data is from the same file just increase the counter for that file
+                        temp.wordList.head.wordCounter++;
                     } else {
+                        // if not add that file to linkedList
                         temp.wordList.addFirst((T) fileName);
                     }
-                    break;// bu yüzden eklenmesine gerek yok döngüden çıkış
+                    temp.frequency++;
+                    return;
                 }
-
             }
         }
     }
 
-    //veri çıktısı inorder (LNR)
+    // inorder traversal (LNR)
     public void inorder() {
         System.out.println("inorder: ");
         inorder(root);
         System.out.println();
     }
-
-    public void inorder(BSTNode<T> node) {// bir node alınır
-        if (node != null) {// node boş değilse
-            inorder(node.left);// önce sol ağaca bakılır
-            System.out.print(node.data + " ");// sonra kendi
-            inorder(node.right);// sonra sağ ağaca bakılır
+    
+    public void inorder(BSTNode<T> node) {
+        if (node != null) {
+            inorder(node.left);
+            System.out.print(node.data + " : " + node.frequency + " | ");
+            inorder(node.right);
         }
     }
 
-    //veri çıktısı postorder (LRN)
+    // postorder traversal (LRN)
     public void postorder() {
         System.out.println("postorder: ");
         postorder(root);
@@ -78,13 +78,14 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
     public void postorder(BSTNode<T> node) {
         if (node != null) {
-            postorder(node.left);//alınan node un önce sol ağacına
-            postorder(node.right);// sonra sağ ağacına
-            System.out.print(node.data + " ");// en son da kendisi
+            postorder(node.left);
+            postorder(node.right);
+            System.out.print(node.data + " : " + node.frequency + " | ");
         }
     }
 
     //veri çıktısı preorder (NLR)
+    // preorder traversal
     public void preorder() {
         System.out.println("preorder: ");
         preorder(root);
@@ -93,16 +94,15 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
     public void preorder(BSTNode<T> node) {
         if (node != null) {
-            System.out.print(node.data + " ");// önce kendi
-            preorder(node.left);// sonra sol ağacı
-            preorder(node.right);// en son sağ ağacı
+            System.out.print(node.data + " : " + node.frequency +  " | ");
+            preorder(node.left);
+            preorder(node.right);
         }
     }
 
-    // BST'de aranan kelimenin sahip olduğu linkedList'e erişme
+    // search a word from BST and print that word linkedlist (fileName - frequency)
     public void printWordsCount(T wanted) {
         BSTNode<T> temp = root;
-
         while (temp != null) {
             int compare = wanted.compareTo(temp.data);
 
@@ -115,7 +115,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 temp = temp.right;
             }
         }
-
         System.out.println("Data not found");
     }
 }
